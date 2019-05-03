@@ -2,8 +2,14 @@ package helper;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import Model.Word;
 
 public class MyHelper extends SQLiteOpenHelper {
 
@@ -44,5 +50,30 @@ public class MyHelper extends SQLiteOpenHelper {
         id = db.insert(tblWord, null, contentValues);
         return id;
     }
+
+    public List<Word> GetAllWords(SQLiteDatabase db ) {
+        List<Word> dictionaryList = new ArrayList<>();
+        String[] columns = {WordID, Word, Meaning};
+        Cursor cursor = db.query(tblWord, columns, null, null, null, null, null);
+
+        if (cursor.getCount()>0){
+            while (cursor.moveToNext()){
+                dictionaryList.add(new Word(cursor.getInt(0), cursor.getString(1), cursor.getString(2)));
+            }
+        }
+        return dictionaryList;
+    }
+
+    public List<Word> GetWordByMane (String Word, SQLiteDatabase db){
+        List<Word> dictionaryList = new ArrayList<>();
+        Cursor cursor = db.rawQuery("select * from tblWord where Word=? ", new String[]{Word});
+        if (cursor.getCount()>0){
+            while (cursor.moveToNext()){
+                dictionaryList.add(new Word(cursor.getInt(0), cursor.getString(1), cursor.getString(2)));
+            }
+        }
+        return dictionaryList;
+    }
+
 
 }
